@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="mq.operations.ProducerConsumerTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-06-05T01:24:00" hostname="DESKTOP-R1LG6SQ" time="2.128">
+  <properties/>
+  <testcase name="testProducerConsumerSuccess()" classname="mq.operations.ProducerConsumerTest" time="2.128"/>
+  <system-out><![CDATA[Produced: Message 1
+Consumed: Message 1
+Produced: Message 2
+Consumed: Message 2
+Produced: Message 3
+Produced: Message 4
+Consumed: Message 3
+Consumed: Message 4
+Produced: Message 5
+Consumed: Message 5
+Produced: Message 6
+Produced: Message 7
+Consumed: Message 6
+Consumed: Message 7
+Produced: Message 8
+Consumed: Message 8
+Produced: Message 9
+Consumed: Message 9
+Produced: Message 10
+Consumed: Message 10
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

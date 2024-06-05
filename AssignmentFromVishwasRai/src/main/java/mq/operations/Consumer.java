@@ -1,7 +1,5 @@
 package mq.operations;
 
-import mq.operations.Logger;
-
 public class Consumer implements Runnable {
     private final MessageQueue queue;
 
@@ -12,13 +10,13 @@ public class Consumer implements Runnable {
     @Override
     public void run() {
         for (int i = 1; i <= 10; i++) {
+            String message = queue.take();
+            Logger.logMessageConsumed(message);
             try {
-                String message = queue.take();
-                Logger.logMessageConsumed(message);
-                // Simulate time taken to process the message
                 Thread.sleep(200);
             } catch (InterruptedException e) {
-                Logger.logError("Error consuming message: " + e.getMessage());
+                Logger.logError(e.getMessage());
+                Thread.currentThread().interrupt();
             }
         }
     }

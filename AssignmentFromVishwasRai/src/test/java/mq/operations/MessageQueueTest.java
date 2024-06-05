@@ -17,7 +17,7 @@ public class MessageQueueTest {
     @Test
     void testTakeEmptyQueue() {
         MessageQueue queue = new MessageQueue();
-        assertThrows(InterruptedException.class, () -> queue.take());
+        assertThrows(InterruptedException.class, () -> {queue.take(); });
     }
 
 }

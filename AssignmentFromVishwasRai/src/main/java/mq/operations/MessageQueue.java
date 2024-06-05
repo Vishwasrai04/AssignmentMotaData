@@ -1,6 +1,8 @@
 package mq.operations;
 
 
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -8,35 +10,30 @@ import java.util.concurrent.locks.ReentrantLock;
 public class MessageQueue {
     private String message;
     private boolean messageAvailable = false;
-    private final Lock lock = new ReentrantLock();
-    private final Condition notEmpty = lock.newCondition();
-    private final Condition notFull = lock.newCondition();
 
-    public void put(String message) throws InterruptedException {
-        lock.lock();
-        try {
-            while (messageAvailable) {
-                notFull.await();
+    public synchronized void put(String message) {
+        while (messageAvailable) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
-            this.message = message;
-            messageAvailable = true;
-            notEmpty.signal();
-        } finally {
-            lock.unlock();
         }
+        this.message = message;
+        messageAvailable = true;
+        notifyAll();
     }
 
-    public String take() throws InterruptedException {
-        lock.lock();
-        try {
-            while (!messageAvailable) {
-                notEmpty.await();
+    public synchronized String take() {
+        while (!messageAvailable) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
-            messageAvailable = false;
-            notFull.signal();
-            return message;
-        } finally {
-            lock.unlock();
         }
+        messageAvailable = false;
+        notifyAll();
+        return message;
     }
 }

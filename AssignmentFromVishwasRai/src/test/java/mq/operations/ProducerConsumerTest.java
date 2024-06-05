@@ -2,7 +2,11 @@ package mq.operations;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+
 public class ProducerConsumerTest {
     private MessageQueue queue;
     private Producer producer;
@@ -30,27 +34,56 @@ public class ProducerConsumerTest {
         assertEquals(0, Logger.getErrorsEncountered());
     }
 
+
     @Test
-    void testConsumerFailure() throws InterruptedException {
-        Consumer failingConsumer = new Consumer(queue) {
+    public void testProducerFailure() {
+        MessageQueue queue = new MessageQueue();
+        Producer producer = new Producer(queue) {
             @Override
             public void run() {
-                try {
-                    String message = queue.take();
-                    if (message == null) {
-                        throw new InterruptedException("Queue is empty");
-                    }
-                } catch (InterruptedException e) {
-                    Logger.logError(e.getMessage());
-                }
+
+                throw new RuntimeException("Producer failed to produce message");
             }
         };
 
-        Thread consumerThread = new Thread(failingConsumer);
-        consumerThread.start();
-        consumerThread.join();
+        Thread producerThread = new Thread(producer);
+        producerThread.start();
 
-        assertEquals(0, Logger.getMessagesProcessed());
-        assertEquals(1, Logger.getErrorsEncountered());
+        try {
+            producerThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(0, queue.take());
+        assertTrue(Logger.getErrorsEncountered() > 0);
     }
+
+    @Test
+    public void testConsumerFailure() {
+        MessageQueue queue = new MessageQueue();
+        queue.put("Message 1");
+
+        Consumer consumer = new Consumer(queue) {
+            @Override
+            public void run() {
+                throw new RuntimeException("Consumer failed to consume message");
+            }
+        };
+
+        Thread consumerThread = new Thread(consumer);
+        consumerThread.start();
+
+        try {
+            consumerThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(1, queue.take());
+        assertTrue(Logger.getErrorsEncountered() > 0);
+    }
+
+
 }
+

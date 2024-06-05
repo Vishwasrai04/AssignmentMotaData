@@ -13,12 +13,8 @@ public class Producer implements Runnable {
     public void run() {
         for (int i = 1; i <= 10; i++) {
             String message = "Message " + i;
-            try {
-                queue.put(message);
-                Logger.logMessageProduced(message);
-            } catch (InterruptedException e) {
-                Logger.logError("Error producing message: " + e.getMessage());
-            }
+            queue.put(message);
+            Logger.logMessageProduced(message);
         }
     }
 }
